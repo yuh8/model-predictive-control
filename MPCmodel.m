@@ -1,23 +1,19 @@
-function [Phi_Phi, Phi_F, Phi_R] = MPCmodel(ssmodel,Np,Nc)
-Ap = ssmodel.A;
-Bp = ssmodel.B;
-Cp = ssmodel.C;
+function [Phi_Phi, Phi_F, Phi_R] = MPCmodel(Ad,Bd,Cd,Np,Nc,idw,ww)
 
-[D,~] = size(Cp);
-Ni = D;
-[M,~] = size(Bp);
+[Nout,~] = size(Cd); % Number of output variables
+[Nm,~] = size(Ad); % Number of state variables
 
 %%SSM Augmentation
-A = [Ap, zeros(M,D);Cp*Ap, eye(D,D)];
-B = [Bp;Cp*Bp];
-C = [zeros(D,M), eye(D,D)];
+A = [Ad, zeros(Nm,Nout);Cd*Ad, eye(Nout,Nout)];
+B = [Bd;Cd*Bd];
+C = [zeros(Nout,Nm), eye(Nout,Nout)];
 
 %%Calculating key matrics in cost function J
 F = C*A;
 Temp_F = F;
 Phi = C*B;
 temp = C;
-
+Q = diag(repmat([idw,ww],1,Np));
 for ii=1:Np-1
     temp = temp*A;
     Phi = [Phi; temp*B];
@@ -32,7 +28,7 @@ for ii = 1:Nc-1
     Phi = [Phi,temp1];
 end
 
-Phi_Phi= Phi'*Phi;
-Phi_F= Phi'*F;
-BarRs=repmat(eye(Ni),Np,1);
-Phi_R=Phi'*BarRs;
+Phi_Phi= Phi'*Q*Phi;
+Phi_F= Phi'*Q*F;
+BarRs=repmat(eye(Nout),Np,1);
+Phi_R=Phi'*Q*BarRs;
