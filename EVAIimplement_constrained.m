@@ -4,6 +4,7 @@ Nm = size(Bp,2); % Number of manipulated variable
 Ns = size(Ap,1); % Number of state variables
 Nout = size(Cp,1); % Number of output variable
 Nc = size(C2,1)/Nm; % Control horizon
+
 %% Define persistent variables that are local to the function
 persistent Xfcur ucur
 if isempty(Xfcur)
@@ -15,7 +16,7 @@ end
 
 %% MPC implement
 yset = [idset;wset];
-%% Solving using QP with constraint
+% Solving using QP with constraint
 C1 = repmat(eye(Nm),Nc,1);
 Umax = ones(Nc*2,1)*Vdc/sqrt(3);
 Umin = -ones(Nc*2,1)*Vdc/sqrt(3);
@@ -24,6 +25,7 @@ fx = Phi_F*Xfcur - Phi_R*yset;
 bmin = Umin - C1*ucur;
 bmax = Umax - C1*ucur;
 [DeltaU,~,~,~,~] = qp_constrained(H,fx,C2,bmin,bmax);
+
 %% update
 deltau = DeltaU(1:Nm,1);
 u = ucur + deltau;
