@@ -21,10 +21,9 @@ Umax = C1*V_DC/sqrt(3);
 Umin = -C1*V_DC/sqrt(3);
 H = Phi_Phi+Coeff*eye(size(Phi_Phi));
 fx = -2*(Phi_R*yset-Phi_F*Xfcur);
-A = C2;
 bmin = Umin-C1*ucur;
 bmax = Umax-C1*ucur;
-[DeltaU,~,~,~,~] = qp_constrained(H,fx,A,bmin,bmax);
+[DeltaU,~,~,~,~] = qp_constrained(H,fx,C2,bmin,bmax);
 %% update
 deltau = DeltaU(1:Nm,1);
 u = ucur + deltau;
