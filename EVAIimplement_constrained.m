@@ -17,8 +17,8 @@ end
 yset = [idset;wset];
 %% Solving using QP with constraint
 C1 = repmat(eye(Nm),Nc,1);
-Umax = C1*Vdc/sqrt(3);
-Umin = -C1*Vdc/sqrt(3);
+Umax = ones(Nc*2,1)*Vdc/sqrt(3);
+Umin = -ones(Nc*2,1)*Vdc/sqrt(3);
 H = Phi_Phi + Coeff*eye(size(Phi_Phi));
 fx = Phi_F*Xfcur - Phi_R*yset;
 bmin = Umin - C1*ucur;
