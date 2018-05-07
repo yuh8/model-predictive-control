@@ -18,7 +18,7 @@ yset = [idset;wset];
 % Stable inversion of massive positive definite matrix
 temp = Phi_Phi+Coeff*eye(size(Phi_Phi));
 L = chol(temp,'lower');
-invtemp = L'\(L\eye(size(X)));
+invtemp = L'\(L\eye(size(temp)));
 % Compute DeltaU
 DeltaU = invtemp*(Phi_R*yset-Phi_F*Xfcur);
 deltau = DeltaU(1:Nm,1);

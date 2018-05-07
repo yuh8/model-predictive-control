@@ -32,3 +32,7 @@ Phi_Phi= Phi'*Q*Phi;
 Phi_F= Phi'*Q*F;
 BarRs=repmat(eye(Nout),Np,1);
 Phi_R=Phi'*Q*BarRs;
+
+Phi_Phi = round(Phi_Phi,4);
+Phi_F = round(Phi_F,4);
+Phi_R = round(Phi_R,4);
