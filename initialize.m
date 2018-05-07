@@ -44,4 +44,4 @@ D = [0 0;0 0];
 Ap = expm(A*Ts);
 Bp = A\(expm(A*Ts)-eye(size(A)))*B;
 Cp = C;
-[Phi_Phi, Phi_F, Phi_R] = MPCmodel(Ap,Bp,Cp,Np,Nc,Qid,Qw);
+[Phi_Phi, Phi_F, Phi_R, C2] = MPCmodel(Ap,Bp,Cp,Np,Nc,Qid,Qw);

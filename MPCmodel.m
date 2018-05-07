@@ -1,8 +1,8 @@
-function [Phi_Phi, Phi_F, Phi_R] = MPCmodel(Ad,Bd,Cd,Np,Nc,idw,ww)
+function [Phi_Phi, Phi_F, Phi_R, C2] = MPCmodel(Ad,Bd,Cd,Np,Nc,idw,ww)
 
 [Nout,~] = size(Cd); % Number of output variables
 [Ns,~] = size(Ad); % Number of state variables
-
+[~,Nm] = size(Bd); % Number of state variables
 %%SSM Augmentation
 A = [Ad, zeros(Ns,Nout);Cd*Ad, eye(Nout,Nout)];
 B = [Bd;Cd*Bd];
@@ -23,9 +23,13 @@ end
 
 temp = Phi;
 [s1,s2] = size(C*B);
+temp1 = repmat(eye(Nm),Nc,1);
+C2 = temp1;
 for ii = 1:Nc-1
-    temp1 = [repmat(zeros(s1,s2),ii,1); temp(1:end-s1*ii,:)];
-    Phi = [Phi,temp1];
+    temp2 = [repmat(zeros(s1,s2),ii,1); temp(1:end-s1*ii,:)];
+    Phi = [Phi,temp2];
+    temp3 = [repmat(zeros(Nm,Nm),ii,1); temp1(1:end-Nm*ii,:)];
+    C2 = [C2,temp3];
 end
 
 Phi_Phi= Phi'*Q*Phi;
