@@ -2,12 +2,12 @@ function [vd,vq]  = EVAIimplement(idset,wset,id,iq,we,Ap,Bp,Cp,Phi_Phi,Phi_F,Phi
 xmcur = [id;iq;we];
 Nm = size(Bp,2); % Number of manipulated variable
 Ns = size(Ap,1); % Number of state variables
-Nout = size(Cp,1); % Number of output variable
+No = size(Cp,1); % Number of output variable
 
 %% Define persistent variables that are local to the function
 persistent Xfcur ucur
 if isempty(Xfcur)
-    Xfcur = zeros(Ns+Nout,1);
+    Xfcur = zeros(Ns+No,1);
 end
 if isempty(ucur)
     ucur = zeros(Nm,1);

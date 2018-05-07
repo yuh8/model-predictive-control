@@ -1,12 +1,12 @@
 function [Phi_Phi, Phi_F, Phi_R] = MPCmodel(Ad,Bd,Cd,Np,Nc,idw,ww)
 
-[Nout,~] = size(Cd); % Number of output variables
-[Ns,~] = size(Ad); % Number of state variables
+No = size(Cd,1); % Number of output variables
+Ns = size(Ad,1); % Number of state variables
 
 %%SSM Augmentation
-A = [Ad, zeros(Ns,Nout);Cd*Ad, eye(Nout,Nout)];
+A = [Ad, zeros(Ns,No);Cd*Ad, eye(No,No)];
 B = [Bd;Cd*Bd];
-C = [zeros(Nout,Ns), eye(Nout,Nout)];
+C = [zeros(No,Ns), eye(No,No)];
 
 %%Calculating key matrics in cost function J
 F = C*A;
@@ -30,7 +30,7 @@ end
 
 Phi_Phi= Phi'*Q*Phi;
 Phi_F= Phi'*Q*F;
-BarRs=repmat(eye(Nout),Np,1);
+BarRs=repmat(eye(No),Np,1);
 Phi_R=Phi'*Q*BarRs;
 
 Phi_Phi = round(Phi_Phi,4);
