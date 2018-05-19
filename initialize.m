@@ -4,8 +4,8 @@ clearvars
 %% Adjustable parameters
 Td = 1e-4;
 Ts = 1e-4; % sampling time of PMSM model and MPC discritization
-Qid = 50;
-Qw = 0.5;
+Qid = 0.7;
+Qt = 0.7;
 Coeff = 0.05;
 Np = 20; % Prediction horizon
 Nc = 10; % Control horizon
@@ -30,18 +30,21 @@ we0 = wm*numP/2; %frequency of current control(rad/sec)
 Kt = 0.629; %torque constant of motor(Nm/A)
 
 %%
-A = [-R/Ld Lq/Ld*we0 Lq/Ld*Iq0;
-     -Ld/Lq*we0 -R/Lq -(Ld/Lq*Id0+fai/Lq);
-     0 3*(numP/2)^2*fai/(2*J) -Vs/J];
+A = [-R/Ld Lq/Ld*we0;
+     -Ld/Lq*we0 -R/Lq];
 B = [1/Ld 0;
-     0 1/Lq;
-     0 0];
-C = [1 0 0;
-     0 0 1];
-D = [0 0;0 0];
+     0 1/Lq];
+C = [1 0;
+    3/2*(numP/2)*(Ld-Lq)*Iq0 3/2*(numP/2)*(fai+(Ld-Lq)*Id0)];
+D = [0; -1.5*numP/2*((Ld-Lq)*Iq0*Id0)];
+epsln = [-Lq/Ld*Iq0*we0; Ld/Lq*Id0*we0];
+G = [Lq/Ld*Iq0;
+    -Ld/Lq*Id0-fai/Lq];
 
 % Used analytical solution rather than matlab discretization 
 Ap = expm(A*Ts);
 Bp = A\(expm(A*Ts)-eye(size(A)))*B;
+Gp = A\(expm(A*Ts)-eye(size(A)))*G;
 Cp = C;
-[Phi_Phi, Phi_F, Phi_R] = MPCmodel(Ap,Bp,Cp,Np,Nc,Qid,Qw);
+Ep = A\(expm(A*Ts)-eye(size(A)))*epsln;
+[Phi_Phi, Phi_F, Phi_R, Phi_Gam,C2] = MPCmodel(Ap,Bp,Cp,Gp,Np,Nc,Qid,Qt);
