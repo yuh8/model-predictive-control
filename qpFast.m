@@ -27,7 +27,7 @@ gam = 1;
 %% Terminating conditions
 epsilon = 1e-6; % termination condition
 non_zero = 1e-6; % Approximated non-zero boundary
-itmax = 100;
+itmax = 3*q;
 in_iter = 0;
 
 Mp = M;
@@ -54,7 +54,7 @@ while any(w<-(gam + dp'*yp)*epsilon) ...
     A = Mp*Mp' + dp*dp';
     b = -gam*dp;
     S(P) = A\b;
-    while any(S(P)<0) && in_iter<itmax
+    while any(S(P)<=0) && in_iter<itmax
         in_iter = in_iter+1;
         temp = (S<=0) & P;
         alpha = min(y(temp)./(y(temp)-S(temp)));
@@ -65,9 +65,6 @@ while any(w<-(gam + dp'*yp)*epsilon) ...
         R = ~P;
         Mp = M(P,:);
         dp = d(P);
-   
-        % The main reason this alg is efficient as only P terms are stored
-        % everytime
         A = Mp*Mp' + dp*dp';
         b = -gam*dp;
         S(P) = A\b;

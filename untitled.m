@@ -1,5 +1,8 @@
 clearvars
 clc
+
+tic;
+for i =1:100000
 N=20;
 M=10;
 X=randn(N,M);
@@ -7,12 +10,9 @@ Q = X'*X;
 f=randn(M,1);
 G = randn(5,10);
 g = ones(5,1);
-for i =1:100000
-tic
 x = qpFast(Q,f,G,g);
-toc;
 end
-
+toc;
 L = chol(Q);
 M = G/L;
 v = L'\f;
