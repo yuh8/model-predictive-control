@@ -25,9 +25,10 @@ y = qzeros;
 gam = 1;
 
 %% Terminating conditions
-epsilon = 1e-4; % termination condition
+epsilon = 1e-6; % termination condition
 non_zero = 1e-6; % Approximated non-zero boundary
 itmax = 100;
+in_iter = 0;
 
 Mp = M;
 yp = y;
@@ -35,7 +36,7 @@ dp = d;
 wy = qzeros;
 
 % Residual for the non-constrained least square problem
-w = M*(M'*y) + (gam + d'*y)*d;
+w = M*(Mp'*yp) + (gam + dp'*yp)*dp;
 while any(w<-(gam + dp'*yp)*epsilon) ...
         && any(R)...
         && (norm(Mp'*yp)^2 + (gam + dp'*yp)^2>non_zero)
@@ -50,23 +51,21 @@ while any(w<-(gam + dp'*yp)*epsilon) ...
     
     Mp = M(P,:);
     dp = d(P);
-    yp = y(P);
     A = Mp*Mp' + dp*dp';
     b = -gam*dp;
     S(P) = A\b;
-    in_iter = 0;
-    while any(S(P)<=0) || in_iter<itmax
+    while any(S(P)<0) && in_iter<itmax
         in_iter = in_iter+1;
         temp = (S<=0) & P;
         alpha = min(y(temp)./(y(temp)-S(temp)));
         y = y + alpha* (S-y);
         I = P & ((abs(y)<=non_zero));
         gam = gam - norm(d(I),1);
-        R = I | R;
-        P = ~R;
+        P(I) = false;
+        R = ~P;
         Mp = M(P,:);
         dp = d(P);
-        yp = y(P);
+   
         % The main reason this alg is efficient as only P terms are stored
         % everytime
         A = Mp*Mp' + dp*dp';
@@ -75,10 +74,11 @@ while any(w<-(gam + dp'*yp)*epsilon) ...
         S(R) = 0;
     end
     y = S;
+    yp = y(P);
     w = M*(Mp'*yp) + (gam + dp'*yp)*d;
 end
 
-cond = norm(Mp'*yp)^2 + norm(gam + dp'*yp)^2;
+cond = norm(Mp'*yp)^2 + (gam + dp'*yp)^2;
 if cond > non_zero % Approximately nonzero
     lambda = -1/(gam+dp'*yp)*yp;
     u = Mp'*lambda;
