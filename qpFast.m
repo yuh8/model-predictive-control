@@ -37,8 +37,8 @@ wy = qzeros;
 % Residual for the non-constrained least square problem
 w = M*(M'*y) + (gam + d'*y)*d;
 while any(w<-(gam + dp'*yp)*epsilon) ...
-        || any(R)...
-        || (norm(Mp'*yp)^2 + (gam + dp'*yp)^2>non_zero)
+        && any(R)...
+        && (norm(Mp'*yp)^2 + (gam + dp'*yp)^2>non_zero)
     
     S = qzeros;
     wy(P) = inf;
@@ -78,10 +78,10 @@ while any(w<-(gam + dp'*yp)*epsilon) ...
     w = M*(Mp'*yp) + (gam + dp'*yp)*d;
 end
 
-cond = norm(Mp'*S(P)')^2 + norm(gam + dp'*S(P))^2;
+cond = norm(Mp'*yp)^2 + norm(gam + dp'*yp)^2;
 if cond > non_zero % Approximately nonzero
-    lambda = -1/(gam+dp'*yp)*y;
-    u = Mp'*lambda(P);
+    lambda = -1/(gam+dp'*yp)*yp;
+    u = Mp'*lambda;
     x = L\(u-v);
 else
     % Infeasible solution returns 0 vectors
