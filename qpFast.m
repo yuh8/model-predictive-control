@@ -25,8 +25,8 @@ y = qzeros;
 gam = 1;
 
 %% Terminating conditions
-epsilon = 1e-6; % termination condition
-non_zero = 1e-6; % Approximated non-zero boundary
+epsilon = 1e-7; % termination condition
+non_zero = 1e-7; % Approximated non-zero boundary
 itmax = 3*q;
 in_iter = 0;
 

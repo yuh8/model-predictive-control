@@ -20,7 +20,7 @@ d = g + M*v;
 
 C = -[M';d'];
 b = [zeros(10,1);1];
-
+lsqnonneg
 % x = nnls(C,b);
 
 
