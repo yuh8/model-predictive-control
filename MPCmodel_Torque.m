@@ -1,14 +1,16 @@
-function [Phi_Phi, Phi_F, Phi_R, Phi_Gam, C2] = MPCmodel(Ad,Bd,Cd,Gd,Np,Nc,idw,Tw)
+function [Phi_Phi, Phi_F, Phi_R, Phi_Gam, C2, H, G, L, M] = MPCmodel_Torque(Ad,Bd,Cd,Gd,Np,Nc,idw,Tw,Coeff)
+
 [Nout,~] = size(Cd); % Number of output variables
 [Ns,~] = size(Ad); % Number of state variables
-[~,Nm] = size(Bd); % Number of state variables
-%% SSM Augmentation
+[~,Nm] = size(Bd); % Number of manipulated variables
+
+%%SSM Augmentation
 A = [Ad, zeros(Ns,Nout);Cd*Ad, eye(Nout,Nout)];
 B = [Bd;Cd*Bd];
 G = [Gd;Cd*Gd];
 C = [zeros(Nout,Ns), eye(Nout,Nout)];
 
-%% Calculating key matrics in cost function J
+%%Calculating key matrics in cost function J
 F = C*A;
 Temp_F = F;
 Phi = C*B;
@@ -36,11 +38,12 @@ end
 
 Phi_Phi= Phi'*Q*Phi;
 Phi_F= Phi'*Q*F;
-BarRs=repmat(eye(No),Np,1);
+BarRs=repmat(eye(Nout),Np,1);
 Phi_R=Phi'*Q*BarRs;
 Phi_Gam = Phi'*Q*Gam;
 
-Phi_Phi = round(Phi_Phi,4);
-Phi_F = round(Phi_F,4);
-Phi_R = round(Phi_R,4);
-Phi_Gam = round(Phi_Gam,4);
+H = Phi_Phi + Coeff*eye(size(Phi_Phi));
+C2 = C2(1:(Nc*Nm/2),:);
+G = [-C2;C2;-C2;C2];
+L = chol(H);
+M = G/L;
